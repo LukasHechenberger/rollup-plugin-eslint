@@ -46,7 +46,7 @@ module.exports = function eslint(options = {}) {
                 const { results: [{ messages = [] } = {}] } = report;
 
                 messages.forEach(({ message, line, column }) => {
-                    this.warn(message, { line, column: column - 1 });
+                    this.warn({ message, line, column: column - 1 });
                 });
             }
 
