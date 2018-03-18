@@ -137,3 +137,21 @@ test('should not fail with found formatter', () => {
         ]
     });
 });
+
+test('should use rollup.warn to print messages by default', () => {
+  let count = 0;
+
+  return rollup({
+      entry: 'fixtures/use-strict.js',
+      plugins: [
+          eslint({
+              throwOnError: false,
+              throwOnWarning: false,
+          })
+      ],
+      onwarn(msg) {
+        count += 1;
+      }
+  })
+    .then(() => expect(count).toBeGreaterThan(0));
+});

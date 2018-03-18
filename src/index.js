@@ -10,8 +10,8 @@ module.exports = function eslint(options = {}) {
     const cli = new CLIEngine(options);
     let formatter = options.formatter;
 
-    if (typeof formatter !== 'function') {
-        formatter = cli.getFormatter(formatter || 'stylish');
+    if (formatter && typeof formatter !== 'function') {
+        formatter = cli.getFormatter(formatter);
     }
 
     const filter = createFilter(
@@ -36,10 +36,18 @@ module.exports = function eslint(options = {}) {
                 return null;
             }
 
-            const result = formatter(report.results);
+            if (formatter) {
+                const result = formatter(report.results);
 
-            if (result) {
-                console.log(result);
+                if (result) {
+                    console.log(result);
+                }
+            } else {
+                const { results: [{ messages = [] } = {}] } = report;
+
+                messages.forEach(({ message, line, column }) => {
+                    this.warn(message, { line, column: column - 1 });
+                });
             }
 
             if (hasWarnings && hasErrors) {
